@@ -1,0 +1,9 @@
+.env*
+.next
+node_modules
+dist
+out
+npm-debug.log*
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
