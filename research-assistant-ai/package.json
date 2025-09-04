@@ -1,0 +1,46 @@
+{
+  "name": "research-assistant-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Multi-agent AI research system for the Vercel AI Gateway Hackathon",
+  "keywords": ["ai", "multi-agent", "research", "vercel", "hackathon", "nextjs"],
+  "author": "Research Assistant AI Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/research-assistant-ai"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next build && next export"
+  },
+  "dependencies": {
+    "next": "14.0.4",
+    "react": "^18",
+    "react-dom": "^18",
+    "ai": "^3.4.0",
+    "openai": "^4.24.0",
+    "zod": "^3.22.4",
+    "lucide-react": "^0.303.0",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.4"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
