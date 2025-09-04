@@ -53,7 +53,7 @@ import OpenAI from "openai";
 
 const client = new OpenAI({
   apiKey: process.env.AI_GATEWAY_API_KEY,
-  baseURL: "https://gateway.ai.vercel.com/api/v1/<team>/<gateway>/openai"
+  baseURL: process.env.AI_GATEWAY_BASE_URL
 });
 
 const response = await client.chat.completions.create({
@@ -61,6 +61,26 @@ const response = await client.chat.completions.create({
   messages: [{ role: "user", content: "Judge this project harshly." }],
 });
 ```
+Example usage (Vercel AI SDK via Gateway):
+```ts
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+const gatewayOpenAI = openai({
+  apiKey: process.env.AI_GATEWAY_API_KEY!,
+  baseURL: process.env.AI_GATEWAY_BASE_URL,
+});
+
+const result = await generateText({
+  model: gatewayOpenAI("gpt-4o-mini"),
+  prompt: "Provide a brutally honest critique of this hackathon project.",
+});
+
+console.log(result.text);
+```
+
+
+
 
 ### 2. Magnitude Setup
 
@@ -104,6 +124,18 @@ npm install @vercel/ai react-query tailwindcss
 ```
 
 ---
+## 🚫 Anti-Patterns and Enforcement
+
+- Do not call provider endpoints directly (e.g., api.openai.com, api.anthropic.com, generativelanguage.googleapis.com).
+- Do not use provider SDKs without setting baseURL to the Gateway.
+- Do not store or reference provider API keys (OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.). Use AI_GATEWAY_API_KEY only.
+- All AI requests must reference AI_GATEWAY_BASE_URL and AI_GATEWAY_API_KEY from environment variables.
+
+Review checklist:
+- Search for “openai.com”, “anthropic.com”, “googleapis”, “gemini” in code/PRs → none should appear in request code.
+- Verify all AI clients use baseURL = AI Gateway and apiKey = AI_GATEWAY_API_KEY.
+
+---
 
 ## 👩‍⚖️ Core Features
 
@@ -121,22 +153,9 @@ npm install @vercel/ai react-query tailwindcss
 * Hours 8–12: Build leaderboard UI.
 * Hours 13–16: Add biasometer + appeal.
 * Hours 17–20: Integrate models via Gateway.
----
-## 🚫 Anti-Patterns and Enforcement
-
-- Do not call provider endpoints directly (e.g., api.openai.com, api.anthropic.com, generativelanguage.googleapis.com).
-- Do not use provider SDKs without setting baseURL to the Gateway.
-- Do not store or reference provider API keys (OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.) in the app. Use AI_GATEWAY_API_KEY only.
-- All AI requests must reference AI_GATEWAY_BASE_URL and AI_GATEWAY_API_KEY from environment variables.
-
-Review checklist:
-- Search for “openai.com”, “anthropic.com”, “googleapis”, “gemini” in code/PRs → none should appear in request code.
-- Verify all AI clients use baseURL = AI Gateway and apiKey = AI_GATEWAY_API_KEY.
-
 * Hours 21–24: Polish demo + presentation.
 
 ---
-
 ## ✅ Success Criteria
 
 * Working demo with automated judging.
@@ -149,12 +168,12 @@ Review checklist:
 ## 🔗 References
 
 * [Hackathon](https://vercel.com/i/ai-gateway-hackathon)
-* [AI Gateway Docs](https://vercel.com/ai/gateway)
+* [AI Gateway Docs](https://vercel.com/docs/ai-gateway)
 * [Magnitude Quickstart](https://docs.magnitude.run/getting-started/introduction)
 * [Magnitude Test Setup](https://docs.magnitude.run/testing/test-setup)
 * [Steel.dev Leaderboard](https://leaderboard.steel.dev/)
 * [Web Eval Agent Repo](https://github.com/Operative-Sh/web-eval-agent)
-* [AI SDK Intro](https://vercel.com/docs/ai/vercel-ai-sdk)
+* [AI SDK Docs](https://vercel.com/docs/ai/vercel-ai-sdk)
 * [Anthropic Models](https://docs.anthropic.com/claude/docs/models-overview)
 * [OpenAI GPT‑4.1](https://openai.com/index/gpt-4-1/)
 * [Google Gemini 2.5 Pro](https://ai.google.dev/gemini-api/docs/models/gemini)
