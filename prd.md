@@ -25,9 +25,16 @@ JudgeGPT is a satirical, multi-agent hackathon judging system designed for the [
 ## 🛠 Tech Stack
 
 * **Agents & Automation**: Magnitude for browser-driven agent tests with vision.
-* **LLMs**: Claude 3.5 Sonnet (via Vercel AI Gateway) for planning, GPT-4o (via Vercel AI Gateway) for commentary, GPT-4.1 for backup.
+* **LLMs**: Claude 3.5 Sonnet for planning, GPT-4o for commentary, GPT-4.1 for backup **(all via Vercel AI Gateway; no direct provider calls)**.
 * **Frontend**: Next.js (Vercel deploy) + Tailwind for sleek UI.
 * **Leaderboard & Commentary**: Realtime scoring dashboard inspired by Steel.dev Leaderboard.
+
+## 🔒 AI Integration Policy
+
+- Vercel AI Gateway is the exclusive provider for all AI requests across all environments.
+- No direct calls to OpenAI, Anthropic, Google Gemini, or any other LLM API are allowed. All requests must route through the Gateway.
+- Model selection (e.g., Claude 3.5 Sonnet, GPT-4o) is expressed via model strings in code; routing, policies, failover, and observability are handled by the Gateway.
+- All client configurations must use the Gateway base URL and API key via environment variables.
 
 ---
 
@@ -35,9 +42,12 @@ JudgeGPT is a satirical, multi-agent hackathon judging system designed for the [
 
 ### 1. Vercel AI Gateway
 
-* Create a Gateway in Vercel dashboard → get Gateway URL + API key.
-* Example usage (Node.js):
+- Create a Gateway in the Vercel dashboard → obtain Gateway URL + API key.
+- Environment variables:
+  - AI_GATEWAY_API_KEY
+  - AI_GATEWAY_BASE_URL (e.g. https://gateway.ai.vercel.com/api/v1/&lt;team&gt;/&lt;gateway&gt;/openai)
 
+Example usage (OpenAI-compatible client):
 ```ts
 import OpenAI from "openai";
 
@@ -111,6 +121,18 @@ npm install @vercel/ai react-query tailwindcss
 * Hours 8–12: Build leaderboard UI.
 * Hours 13–16: Add biasometer + appeal.
 * Hours 17–20: Integrate models via Gateway.
+---
+## 🚫 Anti-Patterns and Enforcement
+
+- Do not call provider endpoints directly (e.g., api.openai.com, api.anthropic.com, generativelanguage.googleapis.com).
+- Do not use provider SDKs without setting baseURL to the Gateway.
+- Do not store or reference provider API keys (OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.) in the app. Use AI_GATEWAY_API_KEY only.
+- All AI requests must reference AI_GATEWAY_BASE_URL and AI_GATEWAY_API_KEY from environment variables.
+
+Review checklist:
+- Search for “openai.com”, “anthropic.com”, “googleapis”, “gemini” in code/PRs → none should appear in request code.
+- Verify all AI clients use baseURL = AI Gateway and apiKey = AI_GATEWAY_API_KEY.
+
 * Hours 21–24: Polish demo + presentation.
 
 ---
