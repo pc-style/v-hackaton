@@ -1,6 +1,20 @@
 # JudgeGPT: Hackathon PRD
 
 ## 📌 Project Overview
+## 🔍 Problem Statement
+Hackathon projects are judged inconsistently and with bias; we want a satirical yet technically solid demo that showcases Vercel AI Gateway–first patterns, observability, and multi-agent automation to evaluate submissions. The goal is to demonstrate AI Gateway policy, routing, and analytics while keeping the experience entertaining and demoable.
+
+### In Scope
+- Multi-agent judging flow with deterministic prompts and model routing via Vercel AI Gateway.
+- Frontend leaderboard and commentary stream.
+- Magnitude-based web eval tests that hit a deployed demo.
+- Gateway analytics usage (keys, routes, rate limits, latency/error monitoring).
+
+### Out of Scope
+- Persisted user accounts and auth.
+- Production-grade moderation and PII handling.
+- Non-Gateway provider integrations or direct calls.
+
 
 JudgeGPT is a satirical, multi-agent hackathon judging system designed for the [Vercel AI Gateway Hackathon](https://vercel.com/i/ai-gateway-hackathon). The project parodies evaluation bias by simulating a panel of eccentric AI judges who "score" hackathon submissions with heavily biased logic. While humorous, JudgeGPT demonstrates:
 
@@ -21,6 +35,13 @@ JudgeGPT is a satirical, multi-agent hackathon judging system designed for the [
   * Evaluation: Technical innovation, creativity, presentation.
 
 ---
+## 👥 Stakeholders and Ownership
+- DRI: pc-style
+- Engineering: @pc-style, contributors
+- Reviewer(s): project collaborators
+- Approver: pc-style
+- Infra/Secrets: DRI owns Gateway keys and environment configuration
+
 
 ## 🛠 Tech Stack
 
@@ -37,6 +58,11 @@ JudgeGPT is a satirical, multi-agent hackathon judging system designed for the [
 - All client configurations must use the Gateway base URL and API key via environment variables.
 
 ---
+## 🚫 Non-Goals
+- No direct use of third-party LLM endpoints or SDK defaults without Gateway baseURL.
+- No custom model hosting; model selection is configured via Gateway.
+- No backend persistence beyond what’s needed for a demo.
+
 
 ## ⚙️ Initialization & Setup
 
@@ -80,6 +106,15 @@ console.log(result.text);
 ```
 
 
+## 🧭 Milestones and Deliverables
+- M1: Gateway configured (routes, models, rate limits), env wired (AI_GATEWAY_API_KEY, AI_GATEWAY_BASE_URL), sample clients working.
+- M2: Judge personas and scoring rubric finalized; deterministic prompts stored in repo.
+- M3: Leaderboard UI and commentary stream hooked to Gateway-backed calls.
+- M4: Magnitude tests running against deployed demo; screenshots/artifacts generated.
+- M5: Observability pass: Gateway analytics reviewed (latency, error codes, usage), add notes to README/PRD.
+
+Exit criteria: Acceptance criteria below are met, and demo runs reliably end-to-end.
+
 
 
 ### 2. Magnitude Setup
@@ -97,6 +132,16 @@ npx magnitude init
 ```
 
 * Example test agent:
+## ⚠️ Risks and Mitigations
+- Gateway misconfiguration breaks demo.
+  - Mitigation: Keep a tested default route and a backup model; document env in .env.example (without secrets).
+- Rate limiting during live demo.
+  - Mitigation: Pre-cache intro content where possible; lower token usage; keep short prompts.
+- Model drift affecting tone.
+  - Mitigation: Add strong system prompts; test with Magnitude before presenting.
+- Secret leakage risk.
+  - Mitigation: Only use AI_GATEWAY_API_KEY; never commit secrets; rotate after demo.
+
 
 ```ts
 import { test } from "magnitude";
@@ -114,6 +159,13 @@ test("Dr Sarah judges project", async ({ expect }) => {
 ```
 
 ### 3. Frontend (Next.js)
+## ✅ Acceptance Criteria
+- All AI calls in the app and tests route through Vercel AI Gateway using AI_GATEWAY_BASE_URL and AI_GATEWAY_API_KEY.
+- Two working examples compile: OpenAI-compatible client and Vercel AI SDK via Gateway.
+- Deployed demo renders leaderboard and judge commentary; at least one submission flow produces scores.
+- Magnitude test script completes and produces screenshots/artifacts.
+- Gateway analytics show traffic during demo; we can reference latency and error rates.
+
 
 * Bootstrap project:
 
@@ -130,6 +182,16 @@ npm install @vercel/ai react-query tailwindcss
 - Do not use provider SDKs without setting baseURL to the Gateway.
 - Do not store or reference provider API keys (OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.). Use AI_GATEWAY_API_KEY only.
 - All AI requests must reference AI_GATEWAY_BASE_URL and AI_GATEWAY_API_KEY from environment variables.
+
+## 📊 Metrics and Telemetry
+Tracked via Vercel AI Gateway analytics:
+- Request count, tokens, model distribution.
+- P50/P95 latency per route/model.
+- Error rate (HTTP status, provider error codes).
+- Spend/quotas (where available).
+Additionally:
+- Frontend timing for judge response rendering.
+- Test success rate and duration in Magnitude.
 
 Review checklist:
 - Search for “openai.com”, “anthropic.com”, “googleapis”, “gemini” in code/PRs → none should appear in request code.
@@ -148,6 +210,15 @@ Review checklist:
 
 ## 📅 Timeline (24h Sprint)
 
+## 🔗 Dependencies and Assumptions
+- Vercel AI Gateway access and team gateway URL are available.
+- Supported models are provisioned and routable via the Gateway.
+- Frontend can be deployed (e.g., Vercel) and publicly accessible for tests.
+- Playwright/Magnitude available in CI/local.
+
+Assumptions:
+- Gateway is the only AI provider; env variables are set in all environments.
+
 * Hours 1–3: Setup Magnitude + Gateway.
 * Hours 4–7: Implement judge personas.
 * Hours 8–12: Build leaderboard UI.
@@ -164,6 +235,17 @@ Review checklist:
 * Polished satirical presentation.
 
 ---
+
+## 🚀 Rollout and Operations
+- Environments: local, preview, prod; all use Gateway with per-env API keys.
+- Secrets: configure AI_GATEWAY_API_KEY in env/secrets store; never commit.
+- Review checklist for PRs:
+  - Search for “openai.com”, “anthropic.com”, “googleapis”, “gemini” → none in request code.
+  - Clients set baseURL = AI_GATEWAY_BASE_URL; apiKey = AI_GATEWAY_API_KEY.
+  - Examples compile and reference env vars only.
+- Monitoring:
+  - Use Gateway analytics to watch latency/error spikes during demo.
+  - Rotate keys after hackathon if shared with collaborators.
 
 ## 🔗 References
 
